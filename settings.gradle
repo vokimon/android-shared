@@ -1,0 +1,27 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
+
+    val yamlPluginDir = file("build-logic/plugins/android-yaml-strings")
+    if (yamlPluginDir.exists()) {
+        includeBuild(yamlPluginDir)
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    versionCatalogs {
+        create("libs") {
+            from(files("gradle/libs.versions.toml"))
+        }
+    }
+}
+
+rootProject.name = "shared"

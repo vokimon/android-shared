@@ -4,14 +4,42 @@ Shared components for Android kotlin applications
 
 ## Usage as Submodule
 
-When included as a submodule, the following files are ignored:
-- `settings.gradle.kts` (use app's settings)
-- `gradle/wrapper/` (use app's wrapper)
+
+```
+git submodule add git@github.com:vokimon/carburoid.git shared
+```
 
 Add to your app's `settings.gradle.kts`:
 ```kotlin
 include(":shared")
-project(":shared").projectDir = file("./shared")
+```
+
+In your app `build.gradle.kts`
+```
+dependencies {
+    implementation(project(":shared"))
+}
+```
+
+## As standalone library
+
+Not yet implemented.
 
 
+## License
+
+Copyright © 2025-2026 David García Garzón
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
 

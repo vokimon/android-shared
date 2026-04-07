@@ -1,0 +1,34 @@
+.gradle/
+build/
+local.properties
+*.iml
+.idea/
+*.apk
+*.aar
+captures/
+app/release/
+app/debug/
+
+# security
+*.jks
+*.p12
+.env
+local.properties
+
+# editors
+.*.sw?
+.*.kate-swp
+
+# Python scripts
+
+__pycache__
+tools/fdroid-data
+tools/fdroid-server
+tools/graphhopper-data
+tools/graphhopper-cli.jar
+
+tools/web/*/index.html
+
+media/promo/banner.png
+media/promo/splash.png
+

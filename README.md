@@ -7,6 +7,7 @@ Shared components for Android kotlin applications
 
 ```
 git submodule add git@github.com:vokimon/carburoid.git shared
+git submodule update --init --recursive
 ```
 
 Add to your app's `settings.gradle.kts`:

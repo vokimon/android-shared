@@ -4,23 +4,13 @@ pluginManagement {
         google()
         mavenCentral()
     }
-
-    val yamlPluginDir = file("build-logic/plugins/android-yaml-strings")
-    if (yamlPluginDir.exists()) {
-        includeBuild(yamlPluginDir)
-    }
+    includeBuild("build-logic/plugins/android-yaml-strings")
 }
 
 dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-    }
-
-    versionCatalogs {
-        create("libs") {
-            from(files("gradle/libs.versions.toml"))
-        }
     }
 }
 

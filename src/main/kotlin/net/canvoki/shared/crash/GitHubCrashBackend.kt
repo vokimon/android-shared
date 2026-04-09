@@ -8,7 +8,7 @@ import kotlinx.coroutines.launch
 import net.canvoki.shared.R
 
 class GitHubCrashBackend(
-    private val repoUrl: String, // e.g. "https://github.com/canvoki/carburoid"
+    private val repoUrl: String,
 ) : CrashBackend {
     override val labelResId: Int = R.string.crash_action_report_github
 
@@ -21,8 +21,12 @@ class GitHubCrashBackend(
             // Build logs with \n (GitHub will render as real line breaks in textarea)
             val logs = "${report.exceptionType}: ${report.exceptionMessage ?: ""}\n\n${report.stackTrace}"
 
-            // Truncate to stay within safe URL length (~8KB total; 3500 chars for logs is safe)
-            val safeLogs = if (logs.length > 3500) logs.take(3500) + "\n[TRUNCATED]" else logs
+            val safeLogs =
+                if (logs.length > MAX_LOG_CHARS_IN_URL) {
+                    logs.take(MAX_LOG_CHARS_IN_URL) + "\n[TRUNCATED – full log available in app]"
+                } else {
+                    logs
+                }
 
             val params =
                 listOf(
@@ -45,4 +49,12 @@ class GitHubCrashBackend(
                     .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
             context.startActivity(intent)
         }
+
+    private companion object {
+        // Maximum characters for the 'logs' field in GitHub issue URL prefill.
+        // Total practical URL length limit is ~8192 chars (Android WebView / Chrome).
+        // Fixed parameters (title, device, etc.) consume ~500 chars.
+        // 8192 - 500 = ~7692 → we use 6000 to ensure safety across all devices and network conditions.
+        private const val MAX_LOG_CHARS_IN_URL = 6000
+    }
 }

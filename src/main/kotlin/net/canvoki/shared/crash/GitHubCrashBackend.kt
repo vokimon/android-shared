@@ -35,6 +35,7 @@ class GitHubCrashBackend(
                     "app_version" to report.appVersion,
                     "android_version" to report.androidVersion,
                     "device" to report.deviceModel,
+                    "install_method" to report.installMethod,
                     "current_activity" to report.currentActivity,
                     "exception_type" to report.exceptionType,
                     "logs" to safeLogs,

@@ -85,6 +85,7 @@ object CrashReporter {
                 currentActivity = CurrentActivityTracker.currentActivityClassName ?: "unknown",
                 exceptionType = ex.javaClass.simpleName,
                 exceptionMessage = ex.message,
+                installMethod = getInstallMethod(context),
                 stackTrace = ex.stackTraceToString(),
             )
 
@@ -105,4 +106,28 @@ object CrashReporter {
                 ObjectInputStream(stream).use { it.readObject() as CrashReport }
             }
         }.getOrNull()
+
+    private fun getInstallMethod(context: Context): String =
+        try {
+            val installer = context.packageManager.getInstallerPackageName(context.packageName)
+            when {
+                installer == null -> {
+                    if (isDebuggable(context)) {
+                        "Built from Source"
+                    } else {
+                        "GitHub Release APK"
+                    }
+                }
+                installer == "com.android.vending" -> "Google Play"
+                installer == "org.fdroid.fdroid" -> "F-Droid"
+                installer.contains("amazon") -> "Amazon Appstore"
+                installer.contains("samsung") -> "Samsung Galaxy Store"
+                else -> "Other ($installer)"
+            }
+        } catch (e: Exception) {
+            "Unknown"
+        }
+
+    private fun isDebuggable(context: Context): Boolean =
+        context.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE != 0
 }

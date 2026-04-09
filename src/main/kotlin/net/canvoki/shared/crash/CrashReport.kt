@@ -10,6 +10,7 @@ data class CrashReport(
     val currentActivity: String,
     val exceptionType: String,
     val exceptionMessage: String?,
+    val installMethod: String,
     val stackTrace: String,
 ) : Serializable {
     val fullText: String
@@ -20,6 +21,7 @@ data class CrashReport(
                 appendLine("Android: $androidVersion")
                 appendLine("Device: $deviceModel")
                 appendLine("Current Activity: $currentActivity")
+                appendLine("Install Method: $installMethod")
                 appendLine()
                 appendLine("Exception: $exceptionType: $exceptionMessage")
                 appendLine()

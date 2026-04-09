@@ -40,9 +40,9 @@ class SaveFileCrashBackend : CrashBackend {
         return suspend {
             try {
                 saveToDownloads(filename, report.fullText.toByteArray())
-                UserMessage.Info("Saved to Downloads").post()
+                UserMessage.Info(context.getString(R.string.crash_message_saved_downloads)).post()
             } catch (e: Exception) {
-                UserMessage.Info("Failed to save file").post()
+                UserMessage.Info(context.getString(R.string.crash_message_save_failed)).post()
             }
         }
     }

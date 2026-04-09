@@ -22,7 +22,7 @@ class CopyCrashBackend : CrashBackend {
 
         return suspend {
             clipboard.setPrimaryClip(ClipData.newPlainText("Crash Report", report.fullText))
-            UserMessage.Info(context.getString(R.string.crash_toast_copied)).post()
+            UserMessage.Info(context.getString(R.string.crash_message_copied)).post()
         }
     }
 }

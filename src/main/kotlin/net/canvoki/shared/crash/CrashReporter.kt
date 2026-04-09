@@ -117,6 +117,8 @@ object CrashReporter {
 
     private fun getInstallMethod(context: Context): String =
         try {
+            // Deprecated, no alternative, still available
+            @Suppress("DEPRECATION")
             val installer = context.packageManager.getInstallerPackageName(context.packageName)
             when {
                 installer == null -> {

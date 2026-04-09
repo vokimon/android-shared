@@ -14,6 +14,17 @@ import net.canvoki.shared.crash.CrashReportDialog
 import net.canvoki.shared.settings.ThemeSettings
 import net.canvoki.shared.usermessage.UserMessageSnackbarHost
 
+/**
+ * Top level Activity component with all the whistles:
+ *
+ * - All what material3 Scaffold already provides
+ * - Material theme with color scheme from preferences
+ * - CrashReportDialog (requires a Reporter in Application)
+ * - SnackBar that shows all usermessages
+ * - Applies device insets for modern Androids
+ * - Column layout
+ */
+
 @Composable
 fun AppScaffold(
     modifier: Modifier = Modifier,

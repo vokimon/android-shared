@@ -10,6 +10,7 @@ import net.canvoki.shared.usermessage.UserMessage
 
 class CopyCrashBackend : CrashBackend {
     override val labelResId: Int = R.string.crash_action_copy_report
+    override val iconResId: Int = R.drawable.ic_content_copy
 
     @Composable
     override fun rememberHandler(

@@ -8,10 +8,9 @@ import kotlinx.coroutines.launch
 import net.canvoki.shared.R
 import java.io.File
 
-class ShareFileCrashBackend(
-    private val filename: String = "crash-report.txt",
-) : CrashBackend {
+class ShareFileCrashBackend : CrashBackend {
     override val labelResId: Int = R.string.crash_action_share_file
+    override val iconResId: Int = R.drawable.ic_share
 
     @Composable
     override fun rememberHandler(
@@ -19,6 +18,7 @@ class ShareFileCrashBackend(
         context: Context,
     ): (suspend () -> Unit) {
         val scope = rememberCoroutineScope()
+        val filename = "${report.appName.lowercase()}-crash-${report.timestamp}.txt"
 
         return suspend {
             val file =

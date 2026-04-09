@@ -27,6 +27,7 @@ class GitHubCrashBackend(
     private val repoUrl: String,
 ) : CrashBackend {
     override val labelResId: Int = R.string.crash_action_report_github
+    override val iconResId: Int = R.drawable.ic_bug_report
 
     @Composable
     override fun rememberHandler(

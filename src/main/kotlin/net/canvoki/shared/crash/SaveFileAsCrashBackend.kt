@@ -17,6 +17,7 @@ import net.canvoki.shared.usermessage.UserMessage
  */
 class SaveFileAsCrashBackend : CrashBackend {
     override val labelResId: Int = R.string.crash_action_save_as
+    override val iconResId: Int = R.drawable.ic_save_as
 
     @Composable
     override fun rememberHandler(

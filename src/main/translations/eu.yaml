@@ -10,3 +10,12 @@ settings_theme: Gaia
 theme_light: Argia
 theme_dark: Iluna
 theme_system: Auto (Sistema lehenetsia)
+crash_title: Aplikazioa kraskatu da
+crash_message: Aplikazioak huts egin zuen azken exekuzioan. Bidali iezaguzu txostena hobetzeko.
+crash_action_report_github: Jakinarazi GitHuben
+crash_action_copy_report: Kopiatu txostena
+crash_action_close: Itxi
+crash_action_share_file: Partekatu fitxategi gisa
+crash_action_save_file: Gorde txostena
+crash_action_save_as: Gorde honela...
+crash_toast_copied: Arbelera kopiatuta

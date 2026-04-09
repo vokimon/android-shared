@@ -10,3 +10,12 @@ settings_theme: Tema
 theme_light: Claro
 theme_dark: Fosco
 theme_system: Automatico (O d'o sistema)
+crash_title: L'aplicación ha fallau
+crash_message: L'aplicación falló la zaguera vegada que s'executó. Ninvíanos l'informe ta millorar-la.
+crash_action_report_github: Informar en GitHub
+crash_action_copy_report: Copiar informe
+crash_action_close: Zarrar
+crash_action_share_file: Compartir como fichero
+crash_action_save_file: Alzar informe
+crash_action_save_as: Alzar como...
+crash_toast_copied: Copiau en o portapapeles

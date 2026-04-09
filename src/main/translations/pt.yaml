@@ -2,7 +2,7 @@ language_code: pt
 language_name: Português
 settings_language_title: Idioma
 settings_language_summary: Mudar o idioma da aplicação
-settings_language_label_incomplete: '{language_native_name} (incompleto)'
+settings_language_label_incomplete: "{language_native_name} (incompleto)"
 language_system_default: Sistema
 settings_translate_title: Ir a Weblate
 settings_translate_summary: Ajuda a traduzir para o teu idioma
@@ -10,3 +10,12 @@ settings_theme: Tema
 theme_light: Claro
 theme_dark: Escuro
 theme_system: Automático (sistema)
+crash_title: A aplicação falhou
+crash_message: A aplicação falhou na última vez que foi executada. Envie-nos o relatório para nos ajudar a melhorá-la.
+crash_action_report_github: Relatar no GitHub
+crash_action_copy_report: Copiar relatório
+crash_action_close: Fechar
+crash_action_share_file: Partilhar como ficheiro
+crash_action_save_file: Guardar relatório
+crash_action_save_as: Guardar como...
+crash_toast_copied: Copiado para a área de transferência

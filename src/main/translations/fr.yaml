@@ -1,8 +1,8 @@
 language_code: fr
 language_name: Français
-settings_language_label_incomplete: "{language_native_name} (incomplet)"
 settings_language_title: Langue
 settings_language_summary: Changez la langue de l'application
+settings_language_label_incomplete: "{language_native_name} (incomplet)"
 language_system_default: Système
 settings_translate_title: Allez sur Weblate
 settings_translate_summary: Aidez à traduire l'application dans votre langue
@@ -10,3 +10,12 @@ settings_theme: Thème
 theme_light: Clair
 theme_dark: Sombre
 theme_system: Automatique (Système)
+crash_title: L'application a planté
+crash_message: L’application a planté lors de sa dernière exécution. Envoyez-nous le rapport pour nous aider à l’améliorer.
+crash_action_report_github: Signaler sur GitHub
+crash_action_copy_report: Copier le rapport
+crash_action_close: Fermer
+crash_action_share_file: Partager en tant que fichier
+crash_action_save_file: Enregistrer le rapport
+crash_action_save_as: Enregistrer sous...
+crash_toast_copied: Copié dans le presse-papiers

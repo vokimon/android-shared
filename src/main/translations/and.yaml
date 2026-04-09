@@ -2,7 +2,7 @@ language_code: and
 language_name: Andalûh
 settings_language_title: Idioma
 settings_language_summary: Cambia el idioma de la aplicaçión
-settings_language_label_incomplete: '{language_native_name} (incompleto)'
+settings_language_label_incomplete: "{language_native_name} (incompleto)"
 language_system_default: Çîttema
 settings_translate_title: Îh a Weblate
 settings_translate_summary: Ayuda a traduçîh tu idioma
@@ -10,3 +10,11 @@ settings_theme: Tema
 theme_light: Claro
 theme_dark: Ôccuro
 theme_system: Automático (Çîttema)
+crash_title: La aplicaçión a fayao
+crash_message: La aplicaçión a encontrao un errôh. Ayúdanô a mehorâl-lo embiando un informe.
+crash_action_report_github: Informâh en GitHub
+crash_action_copy_report: Copiâh informe
+crash_action_close: Çerrâh
+crash_action_share_file: Compartîh como arxibo
+crash_action_save_file: Guardâh l'informe
+crash_toast_copied: Copiao ar portapapelê

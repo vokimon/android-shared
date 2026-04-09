@@ -76,6 +76,13 @@ object CrashReporter {
         ex: Throwable,
         config: CrashReporterConfig,
     ) {
+        val safeTimestamp =
+            java.time.Instant
+                .now()
+                .toString()
+                .replace("T", "-")
+                .replace(":", "-")
+                .replace(".", "-")
         val report =
             CrashReport(
                 appName = config.appName,
@@ -87,6 +94,7 @@ object CrashReporter {
                 exceptionMessage = ex.message,
                 installMethod = getInstallMethod(context),
                 stackTrace = ex.stackTraceToString(),
+                timestamp = safeTimestamp,
             )
 
         try {

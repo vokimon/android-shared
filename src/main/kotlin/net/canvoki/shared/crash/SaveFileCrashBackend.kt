@@ -9,9 +9,6 @@ import net.canvoki.shared.R
 import net.canvoki.shared.storage.MediaCollection
 import net.canvoki.shared.storage.rememberSaveToMediaStore
 import net.canvoki.shared.usermessage.UserMessage
-import java.time.Instant
-import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
 
 /**
  * Crash backend that saves the full crash report as a plain text file
@@ -31,21 +28,13 @@ class SaveFileCrashBackend : CrashBackend {
         report: CrashReport,
         context: Context,
     ): (suspend () -> Unit) {
-        val scope = rememberCoroutineScope()
         val saveToDownloads =
             rememberSaveToMediaStore(
                 collection = MediaCollection.DOWNLOADS,
                 mimeType = "text/plain",
             )
 
-        val appId = context.packageName
-        val timestamp =
-            Instant
-                .now()
-                .atOffset(ZoneOffset.UTC)
-                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ssX"))
-
-        val filename = "$appId-crash-$timestamp.txt"
+        val filename = "${report.appName.lowercase()}-crash-${report.timestamp}.txt"
 
         return suspend {
             try {

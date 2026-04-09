@@ -1,4 +1,3 @@
-// net.canvoki.shared.crash.SaveFileAsCrashBackend.kt
 package net.canvoki.shared.crash
 
 import android.content.Context
@@ -8,9 +7,6 @@ import kotlinx.coroutines.launch
 import net.canvoki.shared.R
 import net.canvoki.shared.storage.rememberSaveFilePicker
 import net.canvoki.shared.usermessage.UserMessage
-import java.time.Instant
-import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
 
 /**
  * Crash backend that lets the user choose where to save the crash report
@@ -27,17 +23,8 @@ class SaveFileAsCrashBackend : CrashBackend {
         report: CrashReport,
         context: Context,
     ): (suspend () -> Unit) {
-        val scope = rememberCoroutineScope()
-        val appId = context.packageName
-        val timestamp =
-            Instant
-                .now()
-                .atOffset(ZoneOffset.UTC)
-                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ssX"))
-        val filename = "$appId-crash-$timestamp.txt"
-
         val saver = rememberSaveFilePicker("text/plain")
-
+        val filename = "${report.appName.lowercase()}-crash-${report.timestamp}.txt"
         return suspend {
             try {
                 saver.save(filename, report.fullText.toByteArray())

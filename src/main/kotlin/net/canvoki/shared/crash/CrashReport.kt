@@ -12,6 +12,7 @@ data class CrashReport(
     val exceptionMessage: String?,
     val installMethod: String,
     val stackTrace: String,
+    val timestamp: String,
 ) : Serializable {
     val fullText: String
         get() =
@@ -22,6 +23,7 @@ data class CrashReport(
                 appendLine("Device: $deviceModel")
                 appendLine("Current Activity: $currentActivity")
                 appendLine("Install Method: $installMethod")
+                appendLine("Timestamp: $timestamp")
                 appendLine()
                 appendLine("Exception: $exceptionType: $exceptionMessage")
                 appendLine()

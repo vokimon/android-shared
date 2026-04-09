@@ -13,9 +13,9 @@ theme_system: Auto (System Default)
 crash_title: App Crashed
 crash_message: The app crashed the last time it ran. Send us the report to help improve it.
 crash_action_report_github: Report on GitHub
-crash_action_copy_report: Copy Report
-crash_action_close: Close
-crash_action_share_file: Share as File
+crash_action_copy_report: Copy report
+crash_action_share_file: Share report
 crash_action_save_file: Save report
 crash_action_save_as: Save as...
 crash_toast_copied: Copied to clipboard
+crash_dialog_done: Done

@@ -14,8 +14,8 @@ crash_title: App abgestürzt
 crash_message: Die App ist beim letzten Start abgestürzt. Senden Sie uns den Bericht, um die App zu verbessern.
 crash_action_report_github: Auf GitHub melden
 crash_action_copy_report: Bericht kopieren
-crash_action_close: Schließen
-crash_action_share_file: Als Datei teilen
+crash_action_share_file: Bericht teilen
 crash_action_save_file: Bericht speichern
 crash_action_save_as: Speichern unter...
 crash_toast_copied: In Zwischenablage kopiert
+crash_dialog_done: Fertig

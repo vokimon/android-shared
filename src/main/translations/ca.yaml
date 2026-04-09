@@ -14,8 +14,8 @@ crash_title: L'aplicació ha fallat
 crash_message: L'aplicació va fallar l'última vegada que es va executar. Envieu-nos l'informe per ajudar-nos a millorar-la.
 crash_action_report_github: Informar a GitHub
 crash_action_copy_report: Copiar informe
-crash_action_close: Tancar
-crash_action_share_file: Compartir com a fitxer
-crash_action_save_file: Desa l'informe
-crash_action_save_as: Desa com...
+crash_action_share_file: Compartir informe
+crash_action_save_file: Desar informe
+crash_action_save_as: Desar com...
 crash_toast_copied: Copiat al porta-retalls
+crash_dialog_done: Fet

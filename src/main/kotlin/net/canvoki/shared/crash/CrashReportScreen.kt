@@ -91,7 +91,7 @@ fun CrashReportScreen() {
                         context.deleteFile(config.crashFileName)
                     }
                 }) {
-                    Text(stringResource(R.string.crash_action_close))
+                    Text(stringResource(R.string.crash_dialog_done))
                 }
             },
             confirmButton = {},

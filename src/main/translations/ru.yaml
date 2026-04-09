@@ -13,9 +13,9 @@ theme_system: Автоматически (системная)
 crash_title: Сбой приложения
 crash_message: Приложение завершилось аварийно при последнем запуске. Отправьте нам отчёт, чтобы помочь улучшить его.
 crash_action_report_github: Сообщить на GitHub
-crash_action_copy_report: Копировать отчет
-crash_action_close: Закрыть
-crash_action_share_file: Поделиться как файлом
+crash_action_copy_report: Копировать отчёт
+crash_action_share_file: Поделиться отчётом
 crash_action_save_file: Сохранить отчёт
 crash_action_save_as: Сохранить как...
 crash_toast_copied: Скопировано в буфер обмена
+crash_dialog_done: Готово

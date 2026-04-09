@@ -14,8 +14,8 @@ crash_title: La aplicación ha fallado
 crash_message: La aplicación falló la última vez que se ejecutó. Envíanos el informe para ayudarnos a mejorarla.
 crash_action_report_github: Informar en GitHub
 crash_action_copy_report: Copiar informe
-crash_action_close: Cerrar
-crash_action_share_file: Compartir como archivo
-crash_action_save_file: Guardar el informe
+crash_action_share_file: Compartir informe
+crash_action_save_file: Guardar informe
 crash_action_save_as: Guardar como...
 crash_toast_copied: Copiado al portapapeles
+crash_dialog_done: Hecho

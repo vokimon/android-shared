@@ -10,7 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import net.canvoki.shared.crash.CrashReportScreen
+import net.canvoki.shared.crash.CrashReportDialog
 import net.canvoki.shared.settings.ThemeSettings
 import net.canvoki.shared.usermessage.UserMessageSnackbarHost
 
@@ -23,7 +23,7 @@ fun AppScaffold(
     MaterialTheme(
         colorScheme = ThemeSettings.effectiveColorScheme(),
     ) {
-        CrashReportScreen()
+        CrashReportDialog()
         Scaffold(
             topBar = topBar,
             snackbarHost = { UserMessageSnackbarHost() },

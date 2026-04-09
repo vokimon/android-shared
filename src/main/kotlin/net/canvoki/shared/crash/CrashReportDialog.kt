@@ -30,7 +30,7 @@ import net.canvoki.shared.R
 import java.io.IOException
 
 @Composable
-fun CrashReportScreen() {
+fun CrashReportDialog() {
     val context = LocalContext.current
     var showDialog by remember { mutableStateOf(false) }
     var crashReport by remember { mutableStateOf<CrashReport?>(null) }

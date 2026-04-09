@@ -25,70 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import net.canvoki.shared.R
-import net.canvoki.shared.crash.CrashBackend
-import net.canvoki.shared.crash.CrashReport
-import net.canvoki.shared.crash.CrashReporter
 import java.io.IOException
-
-@Composable
-fun NoCrashReportScreen() {
-    val context = LocalContext.current
-    var showDialog by remember { mutableStateOf(false) }
-    var crashReport by remember { mutableStateOf<CrashReport?>(null) }
-    val scope = rememberCoroutineScope()
-
-    // Load crash report
-    if (crashReport == null && !showDialog) {
-        runCatching {
-            val config = CrashReporter.config ?: return@runCatching
-            context.openFileInput(config.crashFileName).use { stream ->
-                crashReport = CrashReport(stream.reader().readText(), "Recovered crash")
-                showDialog = true
-            }
-        }.onFailure { }
-    }
-
-    if (showDialog && crashReport != null) {
-        val report = crashReport!!
-        AlertDialog(
-            onDismissRequest = { /* Keep open */ },
-            title = { Text(stringResource(R.string.crash_title)) },
-            text = { Text(stringResource(R.string.crash_message)) },
-            confirmButton = {
-                Column(
-                    modifier =
-                        Modifier
-                            .verticalScroll(rememberScrollState())
-                            .padding(vertical = 8.dp),
-                ) {
-                    CrashReporter.config?.backends?.forEach { backend ->
-                        val handler = backend.rememberHandler(report, context)
-                        Button(
-                            onClick = { scope.launch { handler() } },
-                            modifier = Modifier.fillMaxWidth(),
-                            contentPadding = PaddingValues(12.dp),
-                        ) {
-                            Text(stringResource(backend.labelResId))
-                        }
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    showDialog = false
-                    try {
-                        val config = CrashReporter.config ?: return@TextButton
-                        context.deleteFile(config.crashFileName)
-                    } catch (_: IOException) {
-                    }
-                }) {
-                    Text(stringResource(R.string.crash_action_close))
-                }
-            },
-        )
-    }
-}
 
 @Composable
 fun CrashReportScreen() {
@@ -101,8 +38,9 @@ fun CrashReportScreen() {
     if (crashReport == null && !showDialog) {
         runCatching {
             val config = CrashReporter.config ?: return@runCatching
-            context.openFileInput(config.crashFileName).use { stream ->
-                crashReport = CrashReport(stream.reader().readText(), "Recovered crash")
+            val report = CrashReporter.loadCrashReport(context, config.crashFileName)
+            if (report != null) {
+                crashReport = report
                 showDialog = true
             }
         }.onFailure { /* silent fail */ }
@@ -126,10 +64,7 @@ fun CrashReportScreen() {
                         val handler = backend.rememberHandler(report, context)
                         Button(
                             onClick = {
-                                scope.launch {
-                                    handler()
-                                    // Optionally auto-dismiss after success?
-                                }
+                                scope.launch { handler() }
                             },
                             modifier = Modifier.fillMaxWidth(),
                             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
@@ -143,7 +78,7 @@ fun CrashReportScreen() {
             dismissButton = {
                 TextButton(onClick = {
                     showDialog = false
-                    crashReport = null // ← prevent reload on recomposition
+                    crashReport = null
                     runCatching {
                         val config = CrashReporter.config ?: return@TextButton
                         context.deleteFile(config.crashFileName)
@@ -152,7 +87,7 @@ fun CrashReportScreen() {
                     Text(stringResource(R.string.crash_action_close))
                 }
             },
-            confirmButton = {}, // ← leave empty; actions are in the text
+            confirmButton = {},
         )
     }
 }

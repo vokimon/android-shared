@@ -1,4 +1,3 @@
-// net.canvoki.shared.crash.CrashReporter.kt
 package net.canvoki.shared.crash
 
 import android.app.Activity
@@ -7,6 +6,9 @@ import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import java.io.IOException
+import java.io.ObjectInputStream
+import java.io.ObjectOutputStream
+import java.io.Serializable
 
 data class CrashReporterConfig(
     val appName: String,
@@ -74,26 +76,33 @@ object CrashReporter {
         ex: Throwable,
         config: CrashReporterConfig,
     ) {
-        val currentActivity = CurrentActivityTracker.currentActivityClassName ?: "unknown"
         val report =
-            """
-            App: ${config.appName}
-            Version: ${config.appVersion}
-            Android: ${Build.VERSION.RELEASE} (SDK ${Build.VERSION.SDK_INT})
-            Device: ${Build.MANUFACTURER} ${Build.MODEL}
-            Current Activity: $currentActivity
-
-            Exception: ${ex.javaClass.simpleName}: ${ex.message}
-
-            Stack Trace:
-            ${ex.stackTraceToString()}
-            """.trimIndent()
+            CrashReport(
+                appName = config.appName,
+                appVersion = config.appVersion,
+                androidVersion = "Android ${Build.VERSION.RELEASE}",
+                deviceModel = "${Build.MANUFACTURER} ${Build.MODEL}",
+                currentActivity = CurrentActivityTracker.currentActivityClassName ?: "unknown",
+                exceptionType = ex.javaClass.simpleName,
+                exceptionMessage = ex.message,
+                stackTrace = ex.stackTraceToString(),
+            )
 
         try {
-            context.openFileOutput(config.crashFileName, Context.MODE_PRIVATE).use { out ->
-                out.write(report.toByteArray())
+            context.openFileOutput(config.crashFileName, Context.MODE_PRIVATE).use { stream ->
+                ObjectOutputStream(stream).use { it.writeObject(report) }
             }
         } catch (_: IOException) {
         }
     }
+
+    fun loadCrashReport(
+        context: Context,
+        fileName: String,
+    ): CrashReport? =
+        runCatching {
+            context.openFileInput(fileName).use { stream ->
+                ObjectInputStream(stream).use { it.readObject() as CrashReport }
+            }
+        }.getOrNull()
 }

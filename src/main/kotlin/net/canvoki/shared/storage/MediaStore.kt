@@ -94,7 +94,7 @@ fun rememberSaveToMediaStore(
                     when (collection) {
                         MediaCollection.DOWNLOADS -> {
                             Triple(
-                                Uri.parse("content://media/external/downloads"),
+                                MediaStore.Downloads.EXTERNAL_CONTENT_URI,
                                 MediaStore.Downloads.DISPLAY_NAME,
                                 MediaStore.Downloads.MIME_TYPE,
                             )

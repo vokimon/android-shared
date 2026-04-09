@@ -7,6 +7,22 @@ import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
 import net.canvoki.shared.R
 
+/**
+ * Crash backend that opens a GitHub issue creation page with crash details pre-filled
+ * via URL parameters.
+ *
+ * Requires a GitHub issue template at `.github/ISSUE_TEMPLATE/crash_report.yaml`
+ * with the following fields (all of type `input` or `textarea`):
+ *
+ * - `title` (auto-filled via URL): "💥 Crash: {exception_type} thrown in {current_activity}"
+ * - `app_version` (input): application version string
+ * - `android_version` (input): Android version (e.g., "Android 14")
+ * - `device` (input): device model (e.g., "Google Pixel 6")
+ * - `install_method` (input): installation method (e.g., "F-Droid", "GitHub Release APK")
+ * - `current_activity` (input): name of the activity at crash time
+ * - `exception_type` (input): simple class name of the exception
+ * - `logs` (textarea): full crash log including stack trace
+ */
 class GitHubCrashBackend(
     private val repoUrl: String,
 ) : CrashBackend {

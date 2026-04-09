@@ -38,15 +38,6 @@ enum class MediaCollection(
     AUDIO("audio/*"),
     ;
 
-    fun getContentUri(): Uri =
-        when (this) {
-            DOWNLOADS -> MediaStore.Downloads.EXTERNAL_CONTENT_URI
-            DOCUMENTS -> MediaStore.Files.getContentUri("external")
-            IMAGES -> MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-            VIDEO -> MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-            AUDIO -> MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-        }
-
     fun getRelativePath(): String =
         when (this) {
             DOWNLOADS -> Environment.DIRECTORY_DOWNLOADS
@@ -54,26 +45,6 @@ enum class MediaCollection(
             IMAGES -> Environment.DIRECTORY_PICTURES
             VIDEO -> Environment.DIRECTORY_MOVIES
             AUDIO -> Environment.DIRECTORY_MUSIC
-        }
-
-    internal fun displayNameColumn(): String =
-        when (this) {
-            DOWNLOADS -> MediaStore.Downloads.DISPLAY_NAME
-            DOCUMENTS -> MediaStore.Files.FileColumns.DISPLAY_NAME
-            else -> MediaStore.MediaColumns.DISPLAY_NAME
-        }
-
-    internal fun mimeTypeColumn(): String =
-        when (this) {
-            DOWNLOADS -> MediaStore.Downloads.MIME_TYPE
-            DOCUMENTS -> MediaStore.Files.FileColumns.MIME_TYPE
-            else -> MediaStore.MediaColumns.MIME_TYPE
-        }
-
-    internal fun supportsRelativePath(): Boolean =
-        when (this) {
-            DOWNLOADS, DOCUMENTS -> true
-            else -> false
         }
 }
 
@@ -117,33 +88,70 @@ fun rememberSaveToMediaStore(
     return remember(context, collection, mimeType) {
         { filename, content ->
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                // Android 10+
+                // Android 10+: use MediaStore with proper URIs and columns
                 val resolver = context.contentResolver
+                val (uri, displayNameCol, mimeTypeCol) =
+                    when (collection) {
+                        MediaCollection.DOWNLOADS -> {
+                            Triple(
+                                Uri.parse("content://media/external/downloads"),
+                                MediaStore.Downloads.DISPLAY_NAME,
+                                MediaStore.Downloads.MIME_TYPE,
+                            )
+                        }
+                        MediaCollection.DOCUMENTS -> {
+                            Triple(
+                                MediaStore.Files.getContentUri("external"),
+                                MediaStore.Files.FileColumns.DISPLAY_NAME,
+                                MediaStore.Files.FileColumns.MIME_TYPE,
+                            )
+                        }
+                        MediaCollection.IMAGES -> {
+                            Triple(
+                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                                MediaStore.MediaColumns.DISPLAY_NAME,
+                                MediaStore.MediaColumns.MIME_TYPE,
+                            )
+                        }
+                        MediaCollection.VIDEO -> {
+                            Triple(
+                                MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                                MediaStore.MediaColumns.DISPLAY_NAME,
+                                MediaStore.MediaColumns.MIME_TYPE,
+                            )
+                        }
+                        MediaCollection.AUDIO -> {
+                            Triple(
+                                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                                MediaStore.MediaColumns.DISPLAY_NAME,
+                                MediaStore.MediaColumns.MIME_TYPE,
+                            )
+                        }
+                    }
+                val supportsRelativePath =
+                    collection == MediaCollection.DOWNLOADS ||
+                        collection == MediaCollection.DOCUMENTS
+
                 val contentValues =
                     ContentValues().apply {
-                        put(collection.displayNameColumn(), filename)
-                        put(collection.mimeTypeColumn(), mimeType)
-                        if (collection.supportsRelativePath()) {
+                        put(displayNameCol, filename)
+                        put(mimeTypeCol, mimeType)
+                        if (supportsRelativePath) {
                             put(MediaStore.Downloads.RELATIVE_PATH, collection.getRelativePath())
                         }
                     }
-                resolver.insert(collection.getContentUri(), contentValues)?.let { uri ->
+                resolver.insert(uri, contentValues)?.let { uri ->
                     resolver.openOutputStream(uri)?.use { it.write(content) }
                 }
             } else {
                 // Android 9-
-                val publicDir =
-                    Environment.getExternalStoragePublicDirectory(
-                        collection.getRelativePath(),
-                    )
+                val publicDir = Environment.getExternalStoragePublicDirectory(collection.getRelativePath())
                 val file =
                     File(publicDir, filename).apply {
                         parentFile?.mkdirs()
                         writeBytes(content)
                     }
-                context.sendBroadcast(
-                    Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)),
-                )
+                context.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)))
             }
         }
     }

@@ -3,9 +3,10 @@ package net.canvoki.shared.crash
 import android.content.Context
 import android.net.Uri
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.core.net.toUri
 import kotlinx.coroutines.launch
 import net.canvoki.shared.R
+import net.canvoki.shared.component.openUri
 
 /**
  * Crash backend that opens a GitHub issue creation page with crash details pre-filled
@@ -59,13 +60,7 @@ class GitHubCrashBackend(
                 ).joinToString("&") { (key, value) ->
                     "${Uri.encode(key)}=${Uri.encode(value, "UTF-8")}"
                 }
-
-            val uri = Uri.parse("$repoUrl/issues/new?$params")
-            val intent =
-                android.content
-                    .Intent(android.content.Intent.ACTION_VIEW, uri)
-                    .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
-            context.startActivity(intent)
+            context.openUri("$repoUrl/issues/new?$params")
         }
 
     private companion object {

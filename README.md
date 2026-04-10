@@ -5,7 +5,7 @@ Shared components for Android kotlin applications
 ## Usage as Submodule
 
 ```
-git submodule add git@github.com:vokimon/carburoid.git shared
+git submodule add git@github.com:vokimon/android-shared.git shared
 git submodule update --init --recursive
 ```
 

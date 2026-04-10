@@ -64,6 +64,7 @@ semantic versioning, changelog with breaking change notices and a migration guid
         - WeblateLink: Link inviting to translate on Weblate
     - AppScaffold: Top level activity widget with all the whistles
     - OneTimeNotice: Dialogs that appear only once
+    - StackNavigator: Simplified stack based navigation
     - WatermarkBox: Container Box with an icon as watermark
     - ContextExtensions: Convenience context extensions to start uris and intents
     - Flow: Column or Row depending on a boolean

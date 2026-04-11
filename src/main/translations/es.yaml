@@ -22,3 +22,5 @@ crash_message_copied: Informe copiado al portapapeles
 crash_message_saved: Informe guardado
 crash_message_saved_downloads: Informe guardado en Descargas
 crash_message_save_failed: Error al guardar el informe
+async_list_not_found: "No hay resultados"
+async_list_unknown_error: "Error desconocido"

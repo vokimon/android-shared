@@ -22,3 +22,5 @@ crash_message_copied: Relatório copiado para a área de transferência
 crash_message_saved: Relatório salvo
 crash_message_saved_downloads: Relatório salvo em Downloads
 crash_message_save_failed: Falha ao salvar o relatório
+async_list_not_found: "Nenhum item encontrado"
+async_list_unknown_error: "Erro desconhecido"

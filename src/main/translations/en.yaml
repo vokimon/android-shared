@@ -22,3 +22,5 @@ crash_message_copied: Report copied to clipboard
 crash_message_saved: Report saved
 crash_message_saved_downloads: Report saved to Downloads
 crash_message_save_failed: Failed to save report
+async_list_not_found: "No items found"
+async_list_unknown_error: "Unknown error"

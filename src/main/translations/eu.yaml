@@ -22,3 +22,5 @@ crash_message_copied: Txostena arbelera kopiatu da
 crash_message_saved: Txostena gorde da
 crash_message_saved_downloads: Txostena Deskargatan gorde da
 crash_message_save_failed: Huts egin du txostena gordetzean
+async_list_not_found: "Ez da elementurik aurkitu"
+async_list_unknown_error: "Errore ezezaguna"

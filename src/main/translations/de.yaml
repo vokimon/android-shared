@@ -22,3 +22,5 @@ crash_message_copied: Bericht in Zwischenablage kopiert
 crash_message_saved: Bericht gespeichert
 crash_message_saved_downloads: Bericht in Downloads gespeichert
 crash_message_save_failed: Fehler beim Speichern des Berichts
+async_list_not_found: "Keine Elemente gefunden"
+async_list_unknown_error: "Unbekannter Fehler"

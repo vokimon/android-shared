@@ -22,3 +22,5 @@ crash_message_copied: Отчёт скопирован в буфер обмена
 crash_message_saved: Отчёт сохранён
 crash_message_saved_downloads: Отчёт сохранён в папке «Загрузки»
 crash_message_save_failed: Не удалось сохранить отчёт
+async_list_not_found: "Результаты не найдены"
+async_list_unknown_error: "Неизвестная ошибка"

@@ -22,3 +22,5 @@ crash_message_copied: Informe copiat al porta-retalls
 crash_message_saved: Informe desat
 crash_message_saved_downloads: Informe desat a Baixades
 crash_message_save_failed: Error en desar l'informe
+async_list_not_found: "No s'ha trobat cap resultat"
+async_list_unknown_error: "Error desconegut"

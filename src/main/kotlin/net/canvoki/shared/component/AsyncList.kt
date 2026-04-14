@@ -3,7 +3,12 @@ package net.canvoki.shared.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -15,11 +20,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import net.canvoki.shared.R
 
 /**
  * A composable for displaying a list of items asynchronously with loading/error/empty states.
@@ -30,6 +35,7 @@ import kotlinx.coroutines.withContext
  * @param groupBy optional function to group items by a key; enables sticky headers
  * @param notFoundMessage message to show when list is empty
  * @param unknownErrorMessage message to show on error
+ * @param listState optional LazyListState to preserve scroll position across recompositions and configuration changes
  * @param headerContent composable to render group headers (only used if groupBy is provided)
  * @param content composable to render each item
  */
@@ -39,15 +45,16 @@ fun <T> AsyncList(
     loader: suspend () -> List<T>,
     itemKey: ((T) -> Any)? = null,
     groupBy: ((T) -> String)? = null,
-    notFoundMessage: String = "No items found",
-    unknownErrorMessage: String = "Unknown error",
+    notFoundMessage: String? = null,
+    unknownErrorMessage: String? = null,
+    listState: LazyListState = rememberLazyListState(),
     headerContent: @Composable (String) -> Unit = { group ->
         Text(
             text = group,
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier
+                .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.surface)
-                .fillMaxSize()
                 .padding(16.dp, 8.dp)
         )
     },
@@ -63,7 +70,7 @@ fun <T> AsyncList(
         try {
             items = withContext(Dispatchers.IO) { loader() }
         } catch (e: Exception) {
-            error = e.message ?: unknownErrorMessage
+            error = e.message
         } finally {
             isLoading = false
         }
@@ -78,7 +85,7 @@ fun <T> AsyncList(
         error != null -> {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(
-                    text = error ?: unknownErrorMessage,
+                    text = error ?: unknownErrorMessage ?: stringResource(R.string.async_list_unknown_error),
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
@@ -86,13 +93,16 @@ fun <T> AsyncList(
         items.isEmpty() -> {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(
-                    text = notFoundMessage,
+                    text = notFoundMessage ?: stringResource(R.string.async_list_not_found),
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
         }
         else -> {
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                state = listState
+            ) {
                 if (groupBy != null) {
                     val grouped = items.groupBy(groupBy)
                     grouped.forEach { (group, groupItems) ->

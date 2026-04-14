@@ -60,8 +60,6 @@ androidx-test-runner = { group = "androidx.test", name = "runner", version.ref =
 # Testing libs
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlin" }
-java-diff-utils = { group = "io.github.java-diff-utils", name = "java-diff-utils", version.ref = "java-diff-utils" }
-
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

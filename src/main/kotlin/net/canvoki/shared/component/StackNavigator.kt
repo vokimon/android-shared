@@ -4,9 +4,9 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,9 +24,8 @@ import androidx.compose.runtime.setValue
  * @param T The type representing a screen in the navigation stack.
  */
 class StackNavigatorState<T>(
-    initial: T
+    initial: T,
 ) {
-
     private var stack by mutableStateOf(listOf(initial))
     private var _isForward by mutableStateOf(true)
 
@@ -79,9 +78,7 @@ class StackNavigatorState<T>(
  * @param initial The initial screen of the navigation stack.
  */
 @Composable
-fun <T> rememberStackNavigatorState(initial: T): StackNavigatorState<T> {
-    return remember { StackNavigatorState(initial) }
-}
+fun <T> rememberStackNavigatorState(initial: T): StackNavigatorState<T> = remember { StackNavigatorState(initial) }
 
 /**
  * A Compose navigation container based on a stack model.
@@ -101,9 +98,8 @@ fun <T> rememberStackNavigatorState(initial: T): StackNavigatorState<T> {
 @Composable
 fun <T> StackNavigator(
     state: StackNavigatorState<T>,
-    content: @Composable (T) -> Unit
+    content: @Composable (T) -> Unit,
 ) {
-
     BackHandler(enabled = state.canGoBack) {
         state.back()
     }
@@ -111,17 +107,19 @@ fun <T> StackNavigator(
     AnimatedContent(
         targetState = state.current,
         transitionSpec = {
-            val enter = slideInHorizontally {
-                if (state.isForward) it else -it
-            } + fadeIn()
+            val enter =
+                slideInHorizontally {
+                    if (state.isForward) it else -it
+                } + fadeIn()
 
-            val exit = slideOutHorizontally {
-                if (state.isForward) -it else it
-            } + fadeOut()
+            val exit =
+                slideOutHorizontally {
+                    if (state.isForward) -it else it
+                } + fadeOut()
 
             enter togetherWith exit
         },
-        label = "StackNavigator"
+        label = "StackNavigator",
     ) { screen ->
         content(screen)
     }

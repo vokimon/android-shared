@@ -52,13 +52,14 @@ fun <T> AsyncList(
         Text(
             text = group,
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface)
-                .padding(16.dp, 8.dp)
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.surface)
+                    .padding(16.dp, 8.dp),
         )
     },
-    content: @Composable (T) -> Unit
+    content: @Composable (T) -> Unit,
 ) {
     var items by remember { mutableStateOf<List<T>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
@@ -86,7 +87,7 @@ fun <T> AsyncList(
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(
                     text = error ?: unknownErrorMessage ?: stringResource(R.string.async_list_unknown_error),
-                    style = MaterialTheme.typography.bodyLarge
+                    style = MaterialTheme.typography.bodyLarge,
                 )
             }
         }
@@ -94,14 +95,14 @@ fun <T> AsyncList(
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(
                     text = notFoundMessage ?: stringResource(R.string.async_list_not_found),
-                    style = MaterialTheme.typography.bodyLarge
+                    style = MaterialTheme.typography.bodyLarge,
                 )
             }
         }
         else -> {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                state = listState
+                state = listState,
             ) {
                 if (groupBy != null) {
                     val grouped = items.groupBy(groupBy)

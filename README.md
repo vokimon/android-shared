@@ -71,6 +71,7 @@ semantic versioning, changelog with breaking change notices and a migration guid
     - Flow: Column or Row depending on a boolean
     - LazyColumn: Adds border shades as scrollability indicators to the standard material3 one
     - Scrollbar: Always visible scrollbar
+    - ChooserDialog: A dialog to choose among several options
 
 
 ## License

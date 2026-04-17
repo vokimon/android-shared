@@ -1,7 +1,6 @@
 package net.canvoki.shared.component.preferences
 
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -38,9 +36,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
-import net.canvoki.shared.component.LazyColumn
+import net.canvoki.shared.component.ChooserDialog
+import net.canvoki.shared.component.ChooserOption
 
 @Composable
 fun ListPreference(
@@ -77,54 +74,17 @@ fun ListPreference(
     )
 
     if (showDialog) {
-        Dialog(
-            onDismissRequest = { showDialog = false },
-        ) {
-            Surface(
-                shape = MaterialTheme.shapes.extraLarge,
-                tonalElevation = 6.dp,
-                // No explicit width/height — let Dialog handle it naturally
-            ) {
-                Column(
-                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
-                ) {
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(bottom = 12.dp),
-                    )
-
-                    LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
-                        modifier = Modifier.weight(1f, fill = false),
-                    ) {
-                        items(options) { (optionValue, label) ->
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier =
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .clickable {
-                                            onChange(optionValue)
-                                            showDialog = false
-                                        }.padding(vertical = 8.dp),
-                            ) {
-                                RadioButton(selected = value == optionValue, onClick = null)
-                                Text(label, modifier = Modifier.padding(start = 8.dp))
-                            }
-                        }
-                    }
-
-                    // Cancel button — now always visible
-                    TextButton(
-                        onClick = { showDialog = false },
-                        modifier = Modifier.align(Alignment.End),
-                    ) {
-                        Text(stringResource(android.R.string.cancel))
-                    }
-                }
-            }
-        }
+        ChooserDialog(
+            title = title,
+            options = options.map { ChooserOption(it.first, it.second) },
+            selectedValue = value,
+            onConfirm = { optionValue ->
+                onChange(optionValue)
+                showDialog = false
+            },
+            onDismiss = {
+                showDialog = false
+            },
+        )
     }
 }

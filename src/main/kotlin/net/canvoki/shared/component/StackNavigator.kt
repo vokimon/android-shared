@@ -10,8 +10,13 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import kotlinx.serialization.InternalSerializationApi
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.serializer
 
 /**
  * Holds a stack-based navigation state.
@@ -26,7 +31,25 @@ import androidx.compose.runtime.setValue
 class StackNavigatorState<T>(
     initial: T,
 ) {
-    private var stack by mutableStateOf(listOf(initial))
+    /**
+     * Secondary constructor for restoring a full stack from saved state.
+     *
+     * ⚠️ For internal serialization use only. Not part of the stable public API.
+     */
+    constructor(fullStack: List<T>) : this(fullStack.last()) {
+        stack = fullStack
+        _isForward = false
+    }
+
+    /**
+     * The underlying navigation stack.
+     *
+     * ⚠️ For internal serialization use only. Not part of the stable public API.
+     * Use [current], [push], and [back] for normal navigation.
+     */
+    var stack by mutableStateOf(listOf(initial))
+        internal set
+
     private var _isForward by mutableStateOf(true)
 
     /**
@@ -77,8 +100,27 @@ class StackNavigatorState<T>(
  *
  * @param initial The initial screen of the navigation stack.
  */
+@OptIn(InternalSerializationApi::class)
 @Composable
-fun <T> rememberStackNavigatorState(initial: T): StackNavigatorState<T> = remember { StackNavigatorState(initial) }
+inline fun <reified T : Any> rememberStackNavigatorState(initial: T): StackNavigatorState<T> {
+    val screenSerializer = serializer<T>()
+    val stackSerializer = ListSerializer(screenSerializer)
+    val json = Json { ignoreUnknownKeys = true }
+
+    return rememberSaveable(
+        saver = Saver(
+            save = { state ->
+                json.encodeToString(stackSerializer, state.stack)
+            },
+            restore = { saved ->
+                val restoredStack = json.decodeFromString(stackSerializer, saved)
+                StackNavigatorState(restoredStack)
+            }
+        )
+    ) {
+        StackNavigatorState(initial)
+    }
+}
 
 /**
  * A Compose navigation container based on a stack model.

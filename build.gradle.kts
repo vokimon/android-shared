@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.spotless)
     id("net.canvoki.android-yaml-strings") version "1.0.0"
 }
@@ -32,6 +33,7 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.ui)
+    implementation(platform(libs.kotlinx.serialization.bom))
 
     // AndroidX
     implementation(libs.androidx.core.ktx)
@@ -40,4 +42,5 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.preference.ktx)
+    implementation(libs.kotlinx.serialization.json)
 }

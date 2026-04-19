@@ -108,15 +108,16 @@ inline fun <reified T : Any> rememberStackNavigatorState(initial: T): StackNavig
     val json = Json { ignoreUnknownKeys = true }
 
     return rememberSaveable(
-        saver = Saver(
-            save = { state ->
-                json.encodeToString(stackSerializer, state.stack)
-            },
-            restore = { saved ->
-                val restoredStack = json.decodeFromString(stackSerializer, saved)
-                StackNavigatorState(restoredStack)
-            }
-        )
+        saver =
+            Saver(
+                save = { state ->
+                    json.encodeToString(stackSerializer, state.stack)
+                },
+                restore = { saved ->
+                    val restoredStack = json.decodeFromString(stackSerializer, saved)
+                    StackNavigatorState(restoredStack)
+                },
+            ),
     ) {
         StackNavigatorState(initial)
     }

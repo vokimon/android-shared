@@ -14,8 +14,15 @@ import net.canvoki.shared.R
 
 sealed class AsyncState<out T> {
     data object Loading : AsyncState<Nothing>()
-    data class Success<T>(val data: T) : AsyncState<T>()
-    data class Error(val message: String? = null) : AsyncState<Nothing>()
+
+    data class Success<T>(
+        val data: T,
+    ) : AsyncState<T>()
+
+    data class Error(
+        val message: String? = null,
+    ) : AsyncState<Nothing>()
+
     data object Empty : AsyncState<Nothing>()
 }
 

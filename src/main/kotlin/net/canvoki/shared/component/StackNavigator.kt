@@ -134,8 +134,11 @@ private data class SlideFade(
     val startOffset: Float,
     val endOffset: Float,
     val startAlpha: Float,
-    val endAlpha: Float
-)
+    val endAlpha: Float,
+) {
+    fun offset(t: Float) = startOffset + (endOffset - startOffset) * t
+    fun alpha(t: Float) = startAlpha + (endAlpha - startAlpha) * t
+}
 
 /**
  * Transition definitions:
@@ -239,32 +242,14 @@ fun <T> StackNavigator(
                 }
             }
 
-            val progress = anim.value
-
             val offsetX = when {
                 widthPx < 0f -> 0f
-
-                transition != null -> {
-                    val t = transition.startOffset +
-                        (transition.endOffset - transition.startOffset) * progress
-                    t * widthPx
-                }
-
+                transition != null -> transition.offset(anim.value) * widthPx
                 role == ScreenRole.IDLE_BACKGROUND -> -widthPx
-
                 else -> 0f
             }
 
-            val alpha = when {
-                transition != null -> {
-                    transition.startAlpha +
-                        (transition.endAlpha - transition.startAlpha) * progress
-                }
-
-                role == ScreenRole.IDLE_BACKGROUND -> 0f
-
-                else -> 1f
-            }
+            val alpha = transition?.alpha(anim.value) ?: if (role == ScreenRole.IDLE_BACKGROUND) 0f else 1f
 
             Box(
                 modifier = Modifier

@@ -33,7 +33,7 @@ import kotlin.reflect.full.starProjectedType
 /**
  * Base class for stack-based navigation screens.
  *
- * Subclasses must implement [render] to provide their UI.
+ * Subclasses must implement [Screen] to provide their UI.
  * Screen data should be passed via constructor parameters (must be [Serializable]).
  *
  * @param R The type of value returned when this screen completes via [StackNavigatorState.pop].
@@ -47,7 +47,7 @@ abstract class StackedScreen<R> {
      * Register back behavior via `nav.onBack(this, ...)`
      */
     @Composable
-    abstract fun render(nav: StackNavigatorState)
+    abstract fun Screen(nav: StackNavigatorState)
 }
 
 /**
@@ -302,7 +302,7 @@ fun StackNavigator(
                             .graphicsLayer { this.alpha = alpha }
                             .offset { IntOffset(offsetX.roundToInt(), 0) },
                 ) {
-                    screen.render(state)
+                    screen.Screen(state)
                 }
             }
         }

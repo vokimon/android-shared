@@ -43,4 +43,5 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.preference.ktx)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kotlin.reflect)
 }

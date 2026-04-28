@@ -4,132 +4,156 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.Saver
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
-import kotlinx.serialization.InternalSerializationApi
-import kotlinx.serialization.builtins.ListSerializer
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.unit.IntOffset
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import kotlin.math.roundToInt
+import kotlin.reflect.KClass
+import kotlin.reflect.full.starProjectedType
 
 /**
- * Holds a stack-based navigation state.
+ * Base class for stack-based navigation screens.
  *
- * This class represents a simple navigation model based on a stack of screens.
- * Each new screen is pushed on top of the stack, and back navigation pops it.
+ * Subclasses must implement [render] to provide their UI.
+ * Screen data should be passed via constructor parameters (must be [Serializable]).
  *
- * This is designed to be used together with [StackNavigator] in Jetpack Compose.
- *
- * @param T The type representing a screen in the navigation stack.
+ * @param R The type of value returned when this screen completes via [StackNavigatorState.pop].
+ *          Use [Unit] for screens that do not return data.
  */
-class StackNavigatorState<T>(initial: T) {
-
+@Serializable
+abstract class StackedScreen<R> {
     /**
-     * Secondary constructor for restoring a full stack from saved state.
-     *
-     * For internal serialization use only.
+     * Renders the screen UI.
+     * Access screen data via `this` (e.g., `this.editingId`).
+     * Register back behavior via `nav.onBack(this, ...)`
      */
-    constructor(fullStack: List<T>) : this(fullStack.last()) {
+    @Composable
+    abstract fun render(nav: StackNavigatorState)
+}
+
+/**
+ * Navigation state holding the stack, transient transition flags, and result callbacks.
+ *
+ * This class is passed directly to screens. Internal members are hidden by Kotlin's
+ * [internal] visibility, so screens only see the public navigation API.
+ */
+class StackNavigatorState(
+    initial: StackedScreen<*>,
+) {
+    constructor(fullStack: List<StackedScreen<*>>) : this(fullStack.last()) {
         stack = fullStack
     }
 
-    /**
-     * The underlying navigation stack.
-     *
-     * For internal use. Use [current], [push], and [back] instead.
-     */
     var stack by mutableStateOf(listOf(initial))
         internal set
 
-    /**
-     * Transient screen being pushed (during animation).
-     */
-    internal var pushed: T? by mutableStateOf(null)
+    internal var pushed: StackedScreen<*>? by mutableStateOf(null)
+    internal var backed: StackedScreen<*>? by mutableStateOf(null)
+    private val callbacks = mutableMapOf<Any, (Any?) -> Unit>()
+    private val screenHandlers = mutableMapOf<StackedScreen<*>, () -> Unit>()
 
-    /**
-     * Transient screen being popped (during animation).
-     */
-    internal var backed: T? by mutableStateOf(null)
-
-    /**
-     * The current (top) screen in the navigation stack.
-     */
-    val current: T get() = stack.last()
-
-    /**
-     * Returns true if there is more than one screen in the stack.
-     */
+    val current: StackedScreen<*> get() = stack.last()
     val canGoBack: Boolean get() = stack.size > 1
 
+    internal fun <R> registerCallback(
+        screen: StackedScreen<*>,
+        callback: (R?) -> Unit,
+    ) {
+        callbacks[screen] = { result ->
+            @Suppress("UNCHECKED_CAST")
+            callback(result as R?)
+        }
+    }
+
+    internal fun <R> invokeCallback(
+        screen: StackedScreen<*>,
+        result: R?,
+    ) {
+        callbacks[screen]?.invoke(result)
+        callbacks.remove(screen)
+    }
+
     /**
-     * Requests navigation to a new screen.
+     * Registers a custom handler for the system back button.
+     *
+     * Handlers are keyed explicitly to the [screen] parameter, preventing background
+     * recompositions from interfering with the active top screen.
+     *
+     * @param screen The screen instance that owns this back behavior.
+     * @param enabled Whether the custom handler should intercept back presses.
+     * @param handler Logic to execute instead of default navigation.
      */
-    fun push(screen: T) {
+    fun onBack(
+        screen: StackedScreen<*>,
+        enabled: Boolean = true,
+        handler: () -> Unit = {},
+    ) {
+        if (enabled) screenHandlers[screen] = handler else screenHandlers.remove(screen)
+    }
+
+    internal fun handleBack(default: () -> Unit) {
+        screenHandlers[current]?.invoke() ?: default()
+    }
+
+    /** Push without result callback (ignore return value). */
+    fun push(screen: StackedScreen<*>) {
         if (pushed != null || backed != null) return
         pushed = screen
     }
 
-    /**
-     * Requests back navigation.
-     */
-    fun back() {
+    /** Push with typed result callback. */
+    fun <R> push(
+        screen: StackedScreen<R>,
+        resultCallback: (R?) -> Unit,
+    ) {
+        if (pushed != null || backed != null) return
+        @Suppress("UNCHECKED_CAST")
+        registerCallback(screen, resultCallback)
+        pushed = screen
+    }
+
+    /** Back without result (returns null to parent). */
+    fun pop() {
+        pop<Unit>(null)
+    }
+
+    /** Back with typed result. */
+    fun <R> pop(result: R?) {
         if (!canGoBack || pushed != null || backed != null) return
+        invokeCallback(current, result)
         backed = current
         stack = stack.dropLast(1)
     }
 
-    /**
-     * Commits a pending push operation after animation completes.
-     */
     internal fun endPush() {
         pushed?.let { stack = stack + it }
         pushed = null
     }
 
-    /**
-     * Commits a pending back operation after animation completes.
-     */
-    internal fun endBack() {
+    internal fun endPop() {
         backed = null
     }
 }
 
-/**
- * Creates and remembers a [StackNavigatorState] instance.
- *
- * This should be used instead of manually instantiating the state
- * to ensure proper state saving and restoration across recompositions.
- *
- * @param initial The initial screen of the navigation stack.
- */
-@OptIn(InternalSerializationApi::class)
-@Composable
-inline fun <reified T : Any> rememberStackNavigatorState(initial: T): StackNavigatorState<T> {
-    val serializer = serializer<T>()
-    val listSerializer = ListSerializer(serializer)
-    val json = Json { ignoreUnknownKeys = true }
-
-    return rememberSaveable(
-        saver = Saver(
-            save = { json.encodeToString(listSerializer, it.stack) },
-            restore = { StackNavigatorState(json.decodeFromString(listSerializer, it)) }
-        )
-    ) {
-        StackNavigatorState(initial)
-    }
-}
-
-/**
- * Internal representation of a slide and fade transition.
- */
 private data class SlideFade(
     val startOffset: Float,
     val endOffset: Float,
@@ -137,131 +161,149 @@ private data class SlideFade(
     val endAlpha: Float,
 ) {
     fun offset(t: Float) = startOffset + (endOffset - startOffset) * t
+
     fun alpha(t: Float) = startAlpha + (endAlpha - startAlpha) * t
 }
 
-/**
- * Transition definitions:
- *
- * - fromRightIn: new screen enters from the right
- * - toLeftOut: current screen exits to the left (push)
- * - fromLeftIn: previous screen re-enters from the left (back)
- * - toRightOut: current screen exits to the right (back)
- */
 private fun fromRightIn() = SlideFade(1f, 0f, 0f, 1f)
+
 private fun toLeftOut() = SlideFade(0f, -1f, 1f, 0f)
+
 private fun fromLeftIn() = SlideFade(-1f, 0f, 0f, 1f)
+
 private fun toRightOut() = SlideFade(0f, 1f, 1f, 0f)
 
-/**
- * Internal role of a screen during a navigation transition.
- */
 private enum class ScreenRole {
     ENTER_PUSH,
     EXIT_PUSH,
-    ENTER_BACK,
-    EXIT_BACK,
+    ENTER_POP,
+    EXIT_POP,
     IDLE_TOP,
-    IDLE_BACKGROUND
+    IDLE_BACKGROUND,
 }
 
-/**
- * Stack-based navigation container.
- *
- * This composable renders all screens involved in the current navigation state,
- * including transitional screens, and applies animated transitions between them.
- *
- * It behaves similarly to Android activity transitions:
- * - Push: current screen exits left, new screen enters from right
- * - Back: current screen exits right, previous screen enters from left
- *
- * Screens remain composed during transitions to preserve internal state.
- *
- * @param state The navigation state controlling the stack.
- * @param content Composable content for rendering each screen.
- */
 @Composable
-fun <T> StackNavigator(
-    state: StackNavigatorState<T>,
-    content: @Composable (T) -> Unit,
+fun StackNavigator(
+    bottom: StackedScreen<*>,
+    vararg additional: StackedScreen<*>,
 ) {
+    val json =
+        remember {
+            Json {
+                ignoreUnknownKeys = true
+                explicitNulls = false
+            }
+        }
+
+    // Cross-module Saver: serializes screens as "ClassName|JsonString"
+    // Discovers serializers at runtime via reflection. Zero registration, zero casts.
+    val state =
+        rememberSaveable(
+            saver =
+                Saver<StackNavigatorState, List<String>>(
+                    save = { navState ->
+                        navState.stack.map { screen ->
+                            val kClass = screen::class
+                            val className = kClass.java.name
+
+                            @Suppress("UNCHECKED_CAST")
+                            val kSerializer = serializer(kClass.starProjectedType) as KSerializer<StackedScreen<*>>
+                            val jsonStr = json.encodeToString(kSerializer, screen)
+                            "$className|$jsonStr"
+                        }
+                    },
+                    restore = { saved ->
+                        val restoredScreens =
+                            saved.map { entry ->
+                                val (className, jsonStr) = entry.split('|', limit = 2)
+                                val kClass = Class.forName(className).kotlin
+
+                                @Suppress("UNCHECKED_CAST")
+                                val kSerializer = serializer(kClass.starProjectedType) as KSerializer<StackedScreen<*>>
+                                json.decodeFromString(kSerializer, jsonStr)
+                            }
+                        StackNavigatorState(restoredScreens)
+                    },
+                ),
+        ) {
+            StackNavigatorState(
+                buildList {
+                    add(bottom)
+                    addAll(additional)
+                },
+            )
+        }
+
     BackHandler(enabled = state.canGoBack) {
-        state.back()
+        state.handleBack { state.pop() }
     }
 
     var widthPx by remember { mutableStateOf(-1f) }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .onSizeChanged { widthPx = it.width.toFloat() }
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .onSizeChanged { widthPx = it.width.toFloat() },
     ) {
-
-        val screens = buildList {
-            addAll(state.stack)
-            state.pushed?.let { add(it) }
-            state.backed?.let { add(it) }
-        }
+        val screens =
+            buildList {
+                addAll(state.stack)
+                state.pushed?.let { add(it) }
+                state.backed?.let { add(it) }
+            }
 
         screens.forEach { screen ->
+            val role =
+                when {
+                    screen == state.pushed -> ScreenRole.ENTER_PUSH
+                    screen == state.current && state.pushed != null -> ScreenRole.EXIT_PUSH
+                    screen == state.backed -> ScreenRole.EXIT_POP
+                    screen == state.current && state.backed != null -> ScreenRole.ENTER_POP
+                    screen == state.current -> ScreenRole.IDLE_TOP
+                    else -> ScreenRole.IDLE_BACKGROUND
+                }
 
-            val role = when {
-                screen == state.pushed -> ScreenRole.ENTER_PUSH
-                screen == state.current && state.pushed != null -> ScreenRole.EXIT_PUSH
-                screen == state.backed -> ScreenRole.EXIT_BACK
-                screen == state.current && state.backed != null -> ScreenRole.ENTER_BACK
-                screen == state.current -> ScreenRole.IDLE_TOP
-                else -> ScreenRole.IDLE_BACKGROUND
-            }
+            val transition =
+                when (role) {
+                    ScreenRole.ENTER_PUSH -> fromRightIn()
+                    ScreenRole.EXIT_PUSH -> toLeftOut()
+                    ScreenRole.ENTER_POP -> fromLeftIn()
+                    ScreenRole.EXIT_POP -> toRightOut()
+                    else -> null
+                }
 
-            val transition = when (role) {
-                ScreenRole.ENTER_PUSH -> fromRightIn()
-                ScreenRole.EXIT_PUSH -> toLeftOut()
-                ScreenRole.ENTER_BACK -> fromLeftIn()
-                ScreenRole.EXIT_BACK -> toRightOut()
-                else -> null
-            }
-
-            val anim = remember(screen, state.pushed, state.backed) {
-                Animatable(0f)
-            }
+            val anim = remember(screen, state.pushed, state.backed) { Animatable(0f) }
 
             LaunchedEffect(screen, state.pushed, state.backed) {
                 transition?.let {
                     anim.snapTo(0f)
-                    anim.animateTo(
-                        1f,
-                        tween(
-                            durationMillis = 300,
-                            easing = FastOutSlowInEasing
-                        )
-                    )
-
+                    anim.animateTo(1f, tween(durationMillis = 300, easing = FastOutSlowInEasing))
                     if (role == ScreenRole.ENTER_PUSH) state.endPush()
-                    if (role == ScreenRole.EXIT_BACK) state.endBack()
+                    if (role == ScreenRole.EXIT_POP) state.endPop()
                 }
             }
 
-            val offsetX = when {
-                widthPx < 0f -> 0f
-                transition != null -> transition.offset(anim.value) * widthPx
-                role == ScreenRole.IDLE_BACKGROUND -> -widthPx
-                else -> 0f
-            }
+            val offsetX =
+                when {
+                    widthPx < 0f -> 0f
+                    transition != null -> transition.offset(anim.value) * widthPx
+                    role == ScreenRole.IDLE_BACKGROUND -> -widthPx
+                    else -> 0f
+                }
 
             val alpha = transition?.alpha(anim.value) ?: if (role == ScreenRole.IDLE_BACKGROUND) 0f else 1f
 
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .graphicsLayer {
-                        this.alpha = alpha
-                    }
-                    .offset {
-                        IntOffset(offsetX.roundToInt(), 0)
-                    }
-            ) {
-                content(screen)
+            key(screen) {
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .graphicsLayer { this.alpha = alpha }
+                            .offset { IntOffset(offsetX.roundToInt(), 0) },
+                ) {
+                    screen.render(state)
+                }
             }
         }
     }

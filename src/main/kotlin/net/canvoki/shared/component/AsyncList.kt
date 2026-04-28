@@ -21,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -88,6 +89,7 @@ fun <T> AsyncList(
                 Text(
                     text = error ?: unknownErrorMessage ?: stringResource(R.string.async_list_unknown_error),
                     style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center,
                 )
             }
         }
@@ -96,6 +98,7 @@ fun <T> AsyncList(
                 Text(
                     text = notFoundMessage ?: stringResource(R.string.async_list_not_found),
                     style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center,
                 )
             }
         }

@@ -1,4 +1,6 @@
+# The iso code of the language being translated
 language_code: en
+# The native name of the translated language (Español, Català, Deutsch...), not "English" translated to the language 
 language_name: English
 settings_language_title: Language
 settings_language_summary: Change the app language

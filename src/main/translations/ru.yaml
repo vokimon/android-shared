@@ -24,3 +24,4 @@ crash_message_saved_downloads: Отчёт сохранён в папке «За�
 crash_message_save_failed: Не удалось сохранить отчёт
 async_list_not_found: "Результаты не найдены"
 async_list_unknown_error: "Неизвестная ошибка"
+contextual_help_button_content_desc: Показать справку

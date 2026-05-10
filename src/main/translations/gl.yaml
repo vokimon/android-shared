@@ -24,3 +24,4 @@ crash_message_saved_downloads: Informe gardado en Descargas
 crash_message_save_failed: Fallou ao gardar o informe
 async_list_not_found: "Non se atoparon resultados"
 async_list_unknown_error: "Erro descoñecido"
+contextual_help_button_content_desc: Mostrar axuda

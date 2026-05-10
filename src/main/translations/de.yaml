@@ -24,3 +24,4 @@ crash_message_saved_downloads: Bericht in Downloads gespeichert
 crash_message_save_failed: Fehler beim Speichern des Berichts
 async_list_not_found: "Keine Elemente gefunden"
 async_list_unknown_error: "Unbekannter Fehler"
+contextual_help_button_content_desc: Hilfe anzeigen

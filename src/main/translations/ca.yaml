@@ -24,3 +24,4 @@ crash_message_saved_downloads: Informe desat a Baixades
 crash_message_save_failed: Error en desar l'informe
 async_list_not_found: "No s'ha trobat cap resultat"
 async_list_unknown_error: "Error desconegut"
+contextual_help_button_content_desc: Mostrar ajuda

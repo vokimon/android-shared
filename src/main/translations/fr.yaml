@@ -24,3 +24,4 @@ crash_message_saved_downloads: Rapport enregistré dans Téléchargements
 crash_message_save_failed: Échec de l'enregistrement du rapport
 async_list_not_found: "Aucun élément trouvé"
 async_list_unknown_error: "Erreur inconnue"
+contextual_help_button_content_desc: Afficher l'aide

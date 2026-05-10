@@ -24,3 +24,4 @@ crash_message_saved_downloads: تم حفظ التقرير في التنزيلا�
 crash_message_save_failed: فشل حفظ التقرير
 async_list_not_found: "لم يتم العثور على أي عناصر"
 async_list_unknown_error: "خطأ غير معروف"
+contextual_help_button_content_desc: إظهار المساعدة

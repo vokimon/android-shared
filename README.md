@@ -73,6 +73,7 @@ semantic versioning, changelog with breaking change notices and a migration guid
     - LazyColumn: Adds border shades as scrollability indicators to the standard material3 one
     - Scrollbar: Always visible scrollbar
     - ChooserDialog: A dialog to choose among several options
+    - ContextualHelpButton: A icon buttom which opens a help sheet
 
 
 ## License

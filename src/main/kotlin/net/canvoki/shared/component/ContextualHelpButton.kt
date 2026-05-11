@@ -34,7 +34,6 @@ import net.canvoki.shared.R
 fun ContextualHelpButton(
     title: String,
     description: String,
-    example: String? = null,
     modifier: Modifier = Modifier,
 ) {
     var showSheet by remember { mutableStateOf(false) }
@@ -76,20 +75,6 @@ fun ContextualHelpButton(
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-                example?.let {
-                    Surface(
-                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                        shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier.padding(vertical = 4.dp),
-                    ) {
-                        Text(
-                            text = it,
-                            style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.padding(12.dp),
-                            fontStyle = FontStyle.Italic,
-                        )
-                    }
-                }
                 Spacer(modifier = Modifier.height(8.dp))
             }
         }

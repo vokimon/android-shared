@@ -44,4 +44,6 @@ dependencies {
     implementation(libs.androidx.preference.ktx)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlin.reflect)
+    implementation(libs.compose.markdown.core)
+    implementation(libs.compose.markdown.material3)
 }

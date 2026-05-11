@@ -1,6 +1,5 @@
 package net.canvoki.shared.component
 
-import android.text.Html
 import android.text.Spanned
 import android.text.style.StrikethroughSpan
 import android.text.style.StyleSpan
@@ -18,6 +17,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.core.text.HtmlCompat
 import org.intellij.markdown.flavours.commonmark.CommonMarkFlavourDescriptor
 import org.intellij.markdown.html.HtmlGenerator
 import org.intellij.markdown.parser.MarkdownParser
@@ -32,7 +32,7 @@ fun MdText(
     val annotated =
         remember(markdown) {
             val html = markdown.toHtml()
-            val spanned = Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY)
+            val spanned = HtmlCompat.fromHtml(html, HtmlCompat.FROM_HTML_MODE_LEGACY)
             spanned.toAnnotatedString()
         }
     Text(

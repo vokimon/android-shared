@@ -32,7 +32,7 @@ fun MdText(
     val annotated =
         remember(markdown) {
             val html = markdown.toHtml()
-            val spanned = Html.fromHtml(html, Html.FROM_HTML_MODE_COMPACT)
+            val spanned = Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY)
             spanned.toAnnotatedString()
         }
     Text(

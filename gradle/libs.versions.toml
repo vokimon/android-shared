@@ -6,16 +6,16 @@ minSdk = "26"
 
 # Plugins
 agp = "8.13.2"
-kotlin = "2.3.20"
+kotlin = "2.3.21"
 compose-compiler = "1.5.15"
 spotless = "8.4.0"
 
 # Libraries
 androidx-activity-compose = "1.13.0"
 androidx-appcompat = "1.7.1"
-androidx-compose-bom = "2026.03.01"
+androidx-compose-bom = "2026.04.01"
 androidx-constraintlayout = "2.2.1"
-androidx-core-ktx = "1.17.0"
+androidx-core-ktx = "1.18.0"
 androidx-datastore-preferences = "1.2.1"
 androidx-lifecycle-runtime-ktx = "2.10.0"
 androidx-material = "1.13.0"

@@ -56,6 +56,7 @@ object CurrentActivityTracker {
 object CrashReporter {
     var config: CrashReporterConfig? = null
     private var originalHandler: Thread.UncaughtExceptionHandler? = null
+    private var appStateInfoProvider: (() -> String)? = null
 
     fun initialize(
         application: Application,
@@ -71,6 +72,10 @@ object CrashReporter {
         }
     }
 
+    fun setAppStateInfoProvider(provider: () -> String) {
+        appStateInfoProvider = provider
+    }
+
     private fun saveCrashReport(
         context: Context,
         ex: Throwable,
@@ -83,6 +88,7 @@ object CrashReporter {
                 .replace("T", "-")
                 .replace(":", "-")
                 .replace(".", "-")
+        val appStateInfo = appStateInfoProvider?.invoke()
         val report =
             CrashReport(
                 appName = config.appName,
@@ -95,6 +101,7 @@ object CrashReporter {
                 installMethod = getInstallMethod(context),
                 stackTrace = ex.stackTraceToString(),
                 timestamp = safeTimestamp,
+                appStateInfo = appStateInfo,
             )
 
         try {

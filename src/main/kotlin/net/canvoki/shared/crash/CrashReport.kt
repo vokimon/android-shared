@@ -13,6 +13,7 @@ data class CrashReport(
     val installMethod: String,
     val stackTrace: String,
     val timestamp: String,
+    val appStateInfo: String? = null,
 ) : Serializable {
     val fullText: String
         get() =
@@ -29,6 +30,11 @@ data class CrashReport(
                 appendLine()
                 appendLine("Stack Trace:")
                 append(stackTrace)
+                appStateInfo?.let {
+                    appendLine()
+                    appendLine("App State:")
+                    append(it)
+                }
             }
 
     val summary: String

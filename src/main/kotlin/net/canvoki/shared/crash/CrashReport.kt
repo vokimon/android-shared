@@ -27,14 +27,14 @@ data class CrashReport(
                 appendLine("Timestamp: $timestamp")
                 appendLine()
                 appendLine("Exception: $exceptionType: $exceptionMessage")
-                appendLine()
-                appendLine("Stack Trace:")
-                append(stackTrace)
                 appStateInfo?.let {
                     appendLine()
                     appendLine("App State:")
                     append(it)
                 }
+                appendLine()
+                appendLine("Stack Trace:")
+                append(stackTrace)
             }
 
     val summary: String

@@ -56,6 +56,7 @@ class GitHubCrashBackend(
                     "install_method" to report.installMethod,
                     "current_activity" to report.currentActivity,
                     "exception_type" to report.exceptionType,
+                    "app_state" to (report.appStateInfo ?: "Not available"),
                     "logs" to safeLogs,
                 ).joinToString("&") { (key, value) ->
                     "${Uri.encode(key)}=${Uri.encode(value, "UTF-8")}"

@@ -152,7 +152,7 @@ class StackNavigatorState(
     }
 
     internal fun endPop() {
-        backed = null
+        popped = null
     }
 }
 
@@ -252,7 +252,7 @@ fun StackNavigator(
             buildList {
                 addAll(state.stack)
                 state.pushed?.let { add(it) }
-                state.backed?.let { add(it) }
+                state.popped?.let { add(it) }
             }
 
         screens.forEach { screen ->
@@ -260,8 +260,8 @@ fun StackNavigator(
                 when {
                     screen == state.pushed -> ScreenRole.ENTER_PUSH
                     screen == state.current && state.pushed != null -> ScreenRole.EXIT_PUSH
-                    screen == state.backed -> ScreenRole.EXIT_POP
-                    screen == state.current && state.backed != null -> ScreenRole.ENTER_POP
+                    screen == state.popped -> ScreenRole.EXIT_POP
+                    screen == state.current && state.popped != null -> ScreenRole.ENTER_POP
                     screen == state.current -> ScreenRole.IDLE_TOP
                     else -> ScreenRole.IDLE_BACKGROUND
                 }
@@ -275,9 +275,9 @@ fun StackNavigator(
                     else -> null
                 }
 
-            val anim = remember(screen, state.pushed, state.backed) { Animatable(0f) }
+            val anim = remember(screen, state.pushed, state.popped) { Animatable(0f) }
 
-            LaunchedEffect(screen, state.pushed, state.backed) {
+            LaunchedEffect(screen, state.pushed, state.popped) {
                 transition?.let {
                     anim.snapTo(0f)
                     anim.animateTo(1f, tween(durationMillis = 300, easing = FastOutSlowInEasing))

@@ -140,10 +140,10 @@ class StackNavigatorState(
     fun <R> pop(result: R?) {
         if (!canGoBack) return // No pop when the last screen in the stack
         if (pushed != null) return // No pop during push transition
-        if (popped != null) return // No pop during pop transition
-        invokeCallback(current, result)
-        popped = current
+        val poppedScreen = current
+        popped = poppedScreen
         stack = stack.dropLast(1)
+        invokeCallback(poppedScreen, result)
     }
 
     internal fun endPush() {

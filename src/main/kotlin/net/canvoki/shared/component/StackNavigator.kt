@@ -67,7 +67,7 @@ class StackNavigatorState(
         internal set
 
     internal var pushed: StackedScreen<*>? by mutableStateOf(null)
-    internal var backed: StackedScreen<*>? by mutableStateOf(null)
+    internal var popped: StackedScreen<*>? by mutableStateOf(null)
     private val callbacks = mutableMapOf<Any, (Any?) -> Unit>()
     private val screenHandlers = mutableMapOf<StackedScreen<*>, () -> Unit>()
 
@@ -116,7 +116,7 @@ class StackNavigatorState(
 
     /** Push without result callback (ignore return value). */
     fun push(screen: StackedScreen<*>) {
-        if (pushed != null || backed != null) return
+        if (pushed != null || popped != null) return
         pushed = screen
     }
 
@@ -125,7 +125,7 @@ class StackNavigatorState(
         screen: StackedScreen<R>,
         resultCallback: (R?) -> Unit,
     ) {
-        if (pushed != null || backed != null) return
+        if (pushed != null || popped != null) return
         @Suppress("UNCHECKED_CAST")
         registerCallback(screen, resultCallback)
         pushed = screen
@@ -138,9 +138,9 @@ class StackNavigatorState(
 
     /** Back with typed result. */
     fun <R> pop(result: R?) {
-        if (!canGoBack || pushed != null || backed != null) return
+        if (!canGoBack || pushed != null || popped != null) return
         invokeCallback(current, result)
-        backed = current
+        popped = current
         stack = stack.dropLast(1)
     }
 

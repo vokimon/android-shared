@@ -141,8 +141,9 @@ class StackNavigatorState(
         if (!canGoBack) return // No pop when the last screen in the stack
         if (pushed != null) return // No pop during push transition
         val poppedScreen = current
-        if (popped == null)
+        if (popped == null) {
             popped = poppedScreen
+        }
         stack = stack.dropLast(1)
         invokeCallback(poppedScreen, result)
     }

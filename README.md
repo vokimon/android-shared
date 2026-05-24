@@ -49,6 +49,7 @@ semantic versioning, changelog with breaking change notices and a migration guid
     - CrashDialog: To be inserted in the main activity
     - XXXCrashBackend: Pluggable report actions (GitHub, Share, Copy, Save...)
 - storage: Compose wrappers for MediaStore and SAF (File Pickers)
+    - rememberFileUriPicker
     - rememberOpenFilePicker
     - rememberSaveFilePicker
     - rememberSaveToMediaStore

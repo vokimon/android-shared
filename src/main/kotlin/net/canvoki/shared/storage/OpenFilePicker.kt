@@ -1,6 +1,7 @@
 package net.canvoki.shared.storage
 
 import android.content.Context
+import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
@@ -9,6 +10,29 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+
+/**
+ * A composable function that opens the system file picker and returns a
+ * content:// [Uri] for the selected file, without reading its contents.
+ */
+@Composable
+fun rememberFileUriPicker(): (mimeTypes: Array<String>, onResult: (Uri?) -> Unit) -> Unit {
+    var pendingCallback by remember { mutableStateOf<((Uri?) -> Unit)?>(null) }
+
+    val launcher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.OpenDocument(),
+        ) { uri ->
+            val callback = pendingCallback
+            pendingCallback = null
+            callback?.invoke(uri)
+        }
+
+    return remember(launcher) { { mimeTypes, onResult ->
+        pendingCallback = onResult
+        launcher.launch(mimeTypes)
+    } }
+}
 
 /**
  * Interface that abstracts reading content from a user-chosen file
@@ -49,35 +73,25 @@ interface OpenFilePicker {
 @Composable
 fun rememberOpenFilePicker(): OpenFilePicker {
     val context = LocalContext.current
-    var pendingCallback by remember { mutableStateOf<((ByteArray?) -> Unit)?>(null) }
-
-    val launcher =
-        rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.OpenDocument(),
-        ) { uri ->
-            val callback = pendingCallback
-            pendingCallback = null // cleanup
-
-            if (uri != null) {
-                try {
-                    val content = context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
-                    callback?.invoke(content)
-                } catch (e: Exception) {
-                    callback?.invoke(null)
-                }
-            } else {
-                callback?.invoke(null)
-            }
-        }
-
+    val launcher = rememberFileUriPicker()
     return remember(launcher) {
         object : OpenFilePicker {
             override fun open(
                 mimeTypes: Array<String>,
                 onResult: (ByteArray?) -> Unit,
             ) {
-                pendingCallback = onResult
-                launcher.launch(mimeTypes)
+                launcher(mimeTypes) { uri ->
+                    if (uri != null) {
+                        try {
+                            val bytes = context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
+                            onResult(bytes)
+                        } catch (e: Exception) {
+                            onResult(null)
+                        }
+                    } else {
+                        onResult(null)
+                    }
+                }
             }
         }
     }

@@ -28,10 +28,12 @@ fun rememberFileUriPicker(): (mimeTypes: Array<String>, onResult: (Uri?) -> Unit
             callback?.invoke(uri)
         }
 
-    return remember(launcher) { { mimeTypes, onResult ->
-        pendingCallback = onResult
-        launcher.launch(mimeTypes)
-    } }
+    return remember(launcher) {
+        { mimeTypes, onResult ->
+            pendingCallback = onResult
+            launcher.launch(mimeTypes)
+        }
+    }
 }
 
 /**

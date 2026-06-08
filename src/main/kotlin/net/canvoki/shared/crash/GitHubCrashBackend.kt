@@ -66,9 +66,10 @@ class GitHubCrashBackend(
 
     private companion object {
         // Maximum characters for the 'logs' field in GitHub issue URL prefill.
-        // Total practical URL length limit is ~8192 chars (Android WebView / Chrome).
-        // Fixed parameters (title, device, etc.) consume ~500 chars.
-        // 8192 - 500 = ~7692 → we use 6000 to ensure safety across all devices and network conditions.
-        private const val MAX_LOG_CHARS_IN_URL = 6000
+        // After URL encoding, characters inflate ~1.5-2x (\n→%0A, spaces→%20, etc.).
+        // DuckDuckGo on Android has stricter URL limits than Chrome desktop.
+        // Keeping total URL under ~3000 chars ensures broad compatibility.
+        // Fixed parameters consume ~500 chars, leaving ~2500 for logs.
+        private const val MAX_LOG_CHARS_IN_URL = 2000
     }
 }

@@ -6,10 +6,23 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import kotlinx.coroutines.launch
+import net.canvoki.shared.R
 import net.canvoki.shared.crash.CrashReportDialog
 import net.canvoki.shared.settings.ThemeSettings
 import net.canvoki.shared.usermessage.UserMessageSnackbarHost
@@ -23,14 +36,19 @@ import net.canvoki.shared.usermessage.UserMessageSnackbarHost
  * - SnackBar that shows all usermessages
  * - Applies device insets for modern Androids
  * - Column layout
+ * - Optional side sheet via ModalNavigationDrawer (pass drawer)
  */
-
+//@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppScaffold(
     modifier: Modifier = Modifier,
     topBar: @Composable () -> Unit = {},
-    content: @Composable ColumnScope.() -> Unit,
+    drawer: (@Composable () -> Unit)? = null,
+    content: @Composable ColumnScope.() -> Unit = {},
 ) {
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+
     MaterialTheme(
         colorScheme = ThemeSettings.effectiveColorScheme(),
     ) {
@@ -46,7 +64,20 @@ fun AppScaffold(
                         .fillMaxSize()
                         .padding(padding),
             ) {
-                content()
+                if (drawer == null) {
+                    content()
+                } else {
+                    ModalNavigationDrawer(
+                        drawerState = drawerState,
+                        drawerContent = {
+                            ModalDrawerSheet {
+                                drawer()
+                            }
+                        },
+                    ) {
+                        content()
+                    }
+                }
             }
         }
     }
